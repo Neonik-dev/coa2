@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: service1
+  datasource:
+    url: jdbc:postgresql://localhost:5432/coa2
+    username: postgres
+    password: postgres
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+server:
+  error:
+    whitelabel:
+      enabled: false

@@ -1,0 +1,642 @@
+openapi: 3.0.3
+info:
+  title: StudyGroup Collection API
+  version: "1.0.0"
+  description: >
+    RESTful API для управления коллекцией объектов StudyGroup.
+    Формат данных: XML. Поддерживаются CRUD, фильтрация, сортировка, пагинация
+    и дополнительные операции. Доп. сервис: /isu.
+
+servers:
+  - url: https://helios/api
+
+paths:
+  /persons:
+    post:
+      tags:
+        - "First service: Persons"
+      summary: Создать нового Person
+      description: Создание человека
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '201':
+          description: Created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    get:
+      tags:
+        - "First service: Persons"
+      summary: Получить список Persons
+      description: >
+        Поддерживает фильтрацию по любым комбинациям полей, сортировку и пагинацию.
+        Все параметры — в query.
+      parameters:
+        - name: sort
+          in: query
+          description: "Сортировка, например: sort=name:desc,studentsCount"
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы (с 0)
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: passportId
+          in: query
+          description: "Фильтр: точное совпадение passwortId"
+          schema:
+            type: integer
+            minimum: 1
+        - name: birthday
+          in: query
+          description: "Фильтр: точное совпадение birthday"
+          schema:
+            type: string
+            format: date
+        - name: nationality
+          in: query
+          description: "Фильтр: точное совпадение nationality"
+          schema:
+            $ref: '#/components/schemas/Country'
+        - name: name
+          in: query
+          description: "Фильтр: точное совпадение name"
+          schema:
+            type: string
+        - name: weight
+          in: query
+          description: "Фильтр: точное совпадение weight"
+          schema:
+            type: number
+            format: double
+            minimum: 0
+            exclusiveMinimum: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: object
+                xml:
+                  name: PersonsPage
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Person'
+                    minimum: 1
+                  totalPages:
+                    type: integer
+                    minimum: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  /studygroups:
+    post:
+      tags:
+        - First service
+      summary: Создать новый StudyGroup
+      description: id и creationDate генерируются автоматически на сервере.
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/StudyGroupCreate'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: URL созданного ресурса
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    get:
+      tags:
+        - First service
+      summary: Получить список StudyGroup
+      description: >
+        Поддерживает фильтрацию по любым комбинациям полей, сортировку и пагинацию.
+        Все параметры — в query.
+      parameters:
+        - name: sort
+          in: query
+          description: "Сортировка, например: sort=name:desc,studentsCount"
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы (с 0)
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+        - name: id
+          in: query
+          description: "Фильтр: точное совпадение id"
+          schema:
+            type: integer
+            minimum: 1
+        - name: name
+          in: query
+          description: "Фильтр: точное совпадение name"
+          schema:
+            type: string
+        - name: name_like
+          in: query
+          description: "Фильтр: name содержит подстроку"
+          schema:
+            type: string
+        - name: studentsCount
+          in: query
+          description: "Фильтр: точное совпадение studentsCount"
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: studentsCount_gt
+          in: query
+          description: studentsCount > value
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: studentsCount_lt
+          in: query
+          description: studentsCount < value
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: formOfEducation
+          in: query
+          description: Фильтр по формату обучения (точно)
+          schema:
+            $ref: '#/components/schemas/FormOfEducation'
+        - name: semesterEnum
+          in: query
+          description: Фильтр по семестру (точно)
+          schema:
+            $ref: '#/components/schemas/Semester'
+        - name: creationDate_before
+          in: query
+          description: creationDate < указанного (ISO date-time)
+          schema:
+            type: string
+            format: date-time
+        - name: creationDate_after
+          in: query
+          description: creationDate > указанного (ISO date-time)
+          schema:
+            type: string
+            format: date-time
+        - name: adminName
+          in: query
+          description: Фильтр по имени администратора группы (точно)
+          schema:
+            type: string
+        - name: adminName_like
+          in: query
+          description: Фильтр по имени администратора (contains)
+          schema:
+            type: string
+        - name: adminNationality
+          in: query
+          description: Фильтр по гражданству администратора
+          schema:
+            $ref: '#/components/schemas/Country'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudyGroup'
+                    xml:
+                      name: StudyGroups
+                  totalPages:
+                    type: integer
+                    minimum: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  /studygroups/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      tags:
+        - First service
+      summary: Получить StudyGroup по ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/StudyGroup'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    put:
+      tags:
+        - First service
+      summary: Обновить StudyGroup по ID
+      description: Полная замена ресурса; server-генерируемые поля могут игнорироваться.
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/StudyGroupUpdate'
+      responses:
+        '200':
+          description: Updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags:
+        - First service
+      summary: Удалить StudyGroup по ID
+      responses:
+        '204':
+          description: No Content
+        '404':
+          $ref: '#/components/responses/NotFound'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  # Доп. операции
+  /studygroups/min-creation-date:
+    get:
+      tags:
+        - First service
+      summary: Вернуть один объект с минимальным creationDate
+      responses:
+        '200':
+          description: OK
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/StudyGroup'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  /studygroups/group-by-id:
+    get:
+      tags:
+        - First service
+      summary: Сгруппировать объекты по id и вернуть количество в каждой группе
+      responses:
+        '200':
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: array
+                xml:
+                  name: Groups
+                items:
+                  type: object
+                  xml:
+                    name: GroupCount
+                  properties:
+                    id:
+                      type: integer
+                      minimum: 1
+                    count:
+                      type: integer
+                      minimum: 0
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  /studygroups/form-of-education/lt/{value}:
+    get:
+      tags:
+        - First service
+      summary: Вернуть массив объектов, у которых formOfEducation меньше заданного
+      description: >
+        Порядок сравнения соответствует порядку перечисления в enum FormOfEducation.
+      parameters:
+        - name: value
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/FormOfEducation'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/xml:
+              schema:
+                type: array
+                xml:
+                  name: StudyGroups
+                items:
+                  $ref: '#/components/schemas/StudyGroup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  /isu/group/{group-id}/expel-all:
+    post:
+      tags:
+        - Second service
+      summary: Отчислить всех студентов указанной группы
+      parameters:
+        - name: group-id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Выполнено
+          content:
+            application/xml:
+              schema:
+                type: object
+                xml:
+                  name: Result
+                properties:
+                  groupId:
+                    type: integer
+                  expelled:
+                    type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  /isu/group/{group-id}/change-edu-form/{new-form}:
+    post:
+      tags:
+        - Second service
+      summary: Сменить формат обучения группы на указанный
+      parameters:
+        - name: group-id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: new-form
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/FormOfEducation'
+      responses:
+        '200':
+          description: Выполнено
+          content:
+            application/xml:
+              schema:
+                type: object
+                xml:
+                  name: Result
+                properties:
+                  groupId:
+                    type: integer
+                  formOfEducation:
+                    $ref: '#/components/schemas/FormOfEducation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Entity not found
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict (duplicate/constraint violation)
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Server error
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      xml:
+        name: Error
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+    # Базовые типы
+    Coordinates:
+      type: object
+      xml:
+        name: Coordinates
+      required: [x, y]
+      properties:
+        x:
+          type: number
+          format: float
+        y:
+          type: number
+          format: double
+
+    Person:
+      type: object
+      xml:
+        name: Person
+      required:
+        - name
+        - weight
+        - passportID
+        - nationality
+      properties:
+        name:
+          type: string
+          minLength: 1
+        birthday:
+          type: string
+          format: date
+          nullable: true
+        weight:
+          type: number
+          format: double
+          minimum: 0
+          exclusiveMinimum: true
+        passportID:
+          type: string
+          minLength: 1
+        nationality:
+          $ref: '#/components/schemas/Country'
+
+
+    FormOfEducation:
+      type: string
+      enum: [DISTANCE_EDUCATION, FULL_TIME_EDUCATION, EVENING_CLASSES]
+      xml:
+        name: FormOfEducation
+
+    Semester:
+      type: string
+      enum: [FIRST, SECOND, SIXTH]
+      xml:
+        name: Semester
+
+    Country:
+      type: string
+      enum: [UNITED_KINGDOM, USA, INDIA, VATICAN]
+      xml:
+        name: Country
+
+    StudyGroup:
+      type: object
+      xml:
+        name: StudyGroup
+      required:
+        - id
+        - name
+        - coordinates
+        - creationDate
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+        coordinates:
+          allOf:
+            - $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          type: string
+          format: date-time
+        studentsCount:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: true
+        formOfEducation:
+          allOf:
+            - $ref: '#/components/schemas/FormOfEducation'
+          nullable: true
+        semesterEnum:
+          allOf:
+            - $ref: '#/components/schemas/Semester'
+          nullable: true
+        groupAdmin:
+          allOf:
+            - $ref: '#/components/schemas/Person'
+          nullable: true
+
+    StudyGroupCreate:
+      type: object
+      xml:
+        name: StudyGroup
+      required:
+        - name
+        - coordinates
+      properties:
+        name:
+          type: string
+          minLength: 1
+        coordinates:
+          allOf:
+            - $ref: '#/components/schemas/Coordinates'
+        studentsCount:
+          type: integer
+          format: int64
+          minimum: 1
+          nullable: true
+        formOfEducation:
+          allOf:
+            - $ref: '#/components/schemas/FormOfEducation'
+          nullable: true
+        semesterEnum:
+          allOf:
+            - $ref: '#/components/schemas/Semester'
+          nullable: true
+        groupAdmin:
+          allOf:
+            - $ref: '#/components/schemas/Person'
+          nullable: true
+
+    StudyGroupUpdate:
+      allOf:
+        - $ref: '#/components/schemas/StudyGroupCreate'
