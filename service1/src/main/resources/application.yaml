@@ -12,11 +12,10 @@ spring:
           lob:
             non_contextual_creation: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-only
     show-sql: true
 server:
   error:
     whitelabel:
       enabled: false
   port: 8081
-
