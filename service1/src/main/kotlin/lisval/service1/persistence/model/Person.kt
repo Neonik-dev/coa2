@@ -7,7 +7,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import lisval.service1.persistence.model.enums.Country
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.UUID
 
 @Entity
@@ -17,11 +17,11 @@ data class Person(
     val id: String = UUID.randomUUID().toString(),
     @Column(nullable = false)
     val name: String,
-    val birthday: LocalDateTime,
+    val birthday: LocalDate?,
     @Column(nullable = false)
     val weight: Int,
     @Column(name = "passport_id", unique = true)
-    val passportID: String,
+    val passportID: String?,
     @Enumerated(EnumType.STRING)
-    val nationality: Country
+    val nationality: Country?
 )
