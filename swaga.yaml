@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
   description: >
     RESTful API для управления коллекцией объектов StudyGroup.
-    Формат данных: XML. Поддерживаются CRUD, фильтрация, сортировка, пагинация
+    Формат данных: json. Поддерживаются CRUD, фильтрация, сортировка, пагинация
     и дополнительные операции. Доп. сервис: /isu.
 
 servers:
@@ -20,7 +20,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/xml:
+          application/json:
             schema:
               $ref: '#/components/schemas/Person'
       responses:
@@ -64,7 +64,7 @@ paths:
           in: query
           description: "Фильтр: точное совпадение passwortId"
           schema:
-            type: integer
+            type: string
             minimum: 1
         - name: birthday
           in: query
@@ -87,17 +87,17 @@ paths:
           description: "Фильтр: точное совпадение weight"
           schema:
             type: number
-            format: double
+            format: int
             minimum: 0
             exclusiveMinimum: true
       responses:
         '200':
           description: OK
           content:
-            application/xml:
+            application/json:
               schema:
                 type: object
-                xml:
+                json:
                   name: PersonsPage
                 properties:
                   data:
@@ -122,7 +122,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/xml:
+          application/json:
             schema:
               $ref: '#/components/schemas/StudyGroupCreate'
       responses:
@@ -178,28 +178,9 @@ paths:
           description: "Фильтр: точное совпадение name"
           schema:
             type: string
-        - name: name_like
-          in: query
-          description: "Фильтр: name содержит подстроку"
-          schema:
-            type: string
         - name: studentsCount
           in: query
           description: "Фильтр: точное совпадение studentsCount"
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - name: studentsCount_gt
-          in: query
-          description: studentsCount > value
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-        - name: studentsCount_lt
-          in: query
-          description: studentsCount < value
           schema:
             type: integer
             format: int64
@@ -214,15 +195,9 @@ paths:
           description: Фильтр по семестру (точно)
           schema:
             $ref: '#/components/schemas/Semester'
-        - name: creationDate_before
+        - name: creationDate
           in: query
-          description: creationDate < указанного (ISO date-time)
-          schema:
-            type: string
-            format: date-time
-        - name: creationDate_after
-          in: query
-          description: creationDate > указанного (ISO date-time)
+          description: creationDate
           schema:
             type: string
             format: date-time
@@ -231,12 +206,7 @@ paths:
           description: Фильтр по имени администратора группы (точно)
           schema:
             type: string
-        - name: adminName_like
-          in: query
-          description: Фильтр по имени администратора (contains)
-          schema:
-            type: string
-        - name: adminNationality
+        - name: nationality
           in: query
           description: Фильтр по гражданству администратора
           schema:
@@ -245,7 +215,7 @@ paths:
         '200':
           description: OK
           content:
-            application/xml:
+            application/json:
               schema:
                 type: object
                 properties:
@@ -253,7 +223,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/StudyGroup'
-                    xml:
+                    json:
                       name: StudyGroups
                   totalPages:
                     type: integer
@@ -279,7 +249,7 @@ paths:
         '200':
           description: OK
           content:
-            application/xml:
+            application/json:
               schema:
                 $ref: '#/components/schemas/StudyGroup'
         '404':
@@ -295,7 +265,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/xml:
+          application/json:
             schema:
               $ref: '#/components/schemas/StudyGroupUpdate'
       responses:
@@ -332,7 +302,7 @@ paths:
         '200':
           description: OK
           content:
-            application/xml:
+            application/json:
               schema:
                 $ref: '#/components/schemas/StudyGroup'
         '404':
@@ -349,14 +319,14 @@ paths:
         '200':
           description: OK
           content:
-            application/xml:
+            application/json:
               schema:
                 type: array
-                xml:
+                json:
                   name: Groups
                 items:
                   type: object
-                  xml:
+                  json:
                     name: GroupCount
                   properties:
                     id:
@@ -385,10 +355,10 @@ paths:
         '200':
           description: OK
           content:
-            application/xml:
+            application/json:
               schema:
                 type: array
-                xml:
+                json:
                   name: StudyGroups
                 items:
                   $ref: '#/components/schemas/StudyGroup'
@@ -413,10 +383,10 @@ paths:
         '200':
           description: Выполнено
           content:
-            application/xml:
+            application/json:
               schema:
                 type: object
-                xml:
+                json:
                   name: Result
                 properties:
                   groupId:
@@ -449,10 +419,10 @@ paths:
         '200':
           description: Выполнено
           content:
-            application/xml:
+            application/json:
               schema:
                 type: object
-                xml:
+                json:
                   name: Result
                 properties:
                   groupId:
@@ -471,32 +441,32 @@ components:
     BadRequest:
       description: Invalid input
       content:
-        application/xml:
+        application/json:
           schema:
             $ref: '#/components/schemas/Error'
     NotFound:
       description: Entity not found
       content:
-        application/xml:
+        application/json:
           schema:
             $ref: '#/components/schemas/Error'
     Conflict:
       description: Conflict (duplicate/constraint violation)
       content:
-        application/xml:
+        application/json:
           schema:
             $ref: '#/components/schemas/Error'
     ServerError:
       description: Server error
       content:
-        application/xml:
+        application/json:
           schema:
             $ref: '#/components/schemas/Error'
 
   schemas:
     Error:
       type: object
-      xml:
+      json:
         name: Error
       properties:
         code:
@@ -504,29 +474,26 @@ components:
         message:
           type: string
 
-    # Базовые типы
     Coordinates:
       type: object
-      xml:
+      json:
         name: Coordinates
-      required: [x, y]
+      required: [y]
       properties:
         x:
           type: number
-          format: float
+          format: int
         y:
           type: number
-          format: double
+          format: int
 
     Person:
       type: object
-      xml:
+      json:
         name: Person
       required:
         - name
         - weight
-        - passportID
-        - nationality
       properties:
         name:
           type: string
@@ -537,9 +504,8 @@ components:
           nullable: true
         weight:
           type: number
-          format: double
-          minimum: 0
-          exclusiveMinimum: true
+          format: int
+          minimum: 1
         passportID:
           type: string
           minLength: 1
@@ -550,24 +516,24 @@ components:
     FormOfEducation:
       type: string
       enum: [DISTANCE_EDUCATION, FULL_TIME_EDUCATION, EVENING_CLASSES]
-      xml:
+      json:
         name: FormOfEducation
 
     Semester:
       type: string
-      enum: [FIRST, SECOND, SIXTH]
-      xml:
+      enum: [FIRST, THIRD, SIXTH, SEVENTH, EIGHTH]
+      json:
         name: Semester
 
     Country:
       type: string
-      enum: [UNITED_KINGDOM, USA, INDIA, VATICAN]
-      xml:
+      enum: [FRANCE, CHINA, INDIA]
+      json:
         name: Country
 
     StudyGroup:
       type: object
-      xml:
+      json:
         name: StudyGroup
       required:
         - id
@@ -586,7 +552,7 @@ components:
             - $ref: '#/components/schemas/Coordinates'
         creationDate:
           type: string
-          format: date-time
+          format: date
         studentsCount:
           type: integer
           format: int64
@@ -607,7 +573,7 @@ components:
 
     StudyGroupCreate:
       type: object
-      xml:
+      json:
         name: StudyGroup
       required:
         - name
