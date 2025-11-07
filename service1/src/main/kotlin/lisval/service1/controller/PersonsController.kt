@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 
 @RestController
-@RequestMapping("/persons")
+@RequestMapping("/api/persons")
 @Validated
 class PersonsController(
     private val personService: PersonService,
