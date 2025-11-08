@@ -53,4 +53,14 @@ class StudyGroupMapper(
             groupAdmin = group.groupAdmin?.let { personMapper.mapToPersonResponse(it) },
         )
     }
+
+    fun enrichToStudyGroup(group: StudyGroup, request: NewStudyGroup, admin: Person?) {
+        group.name = request.name
+        group.coordinates.x = request.coordinates.x
+        group.coordinates.y = request.coordinates.y
+        group.studentCount = request.studentsCount
+        group.formOfEducation = request.formOfEducation
+        group.semesterEnum = request.semesterEnum
+        group.groupAdmin = admin
+    }
 }

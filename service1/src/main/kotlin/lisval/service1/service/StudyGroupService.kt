@@ -40,13 +40,13 @@ class StudyGroupService(
     }
 
     fun putById(id: Long, request: NewStudyGroup) {
-        var studyGroup = studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
+        val studyGroup = studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
         val admin = when (request.groupAdmin) {
             null -> null
             studyGroup.groupAdmin?.id -> studyGroup.groupAdmin
             else -> personRepository.findByIdOrNull(request.groupAdmin) ?: throw RuntimeException("челик не найден")
         }
-        studyGroup = studentGroupMapper.mapToEntity(request, admin)
+        studentGroupMapper.enrichToStudyGroup(studyGroup, request, admin)
         studyGroupRepository.save(studyGroup)
     }
 

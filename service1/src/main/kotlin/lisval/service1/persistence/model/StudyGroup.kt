@@ -23,20 +23,20 @@ data class StudyGroup(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long? = null,
     @Column(nullable = false)
-    val name: String,
+    var name: String,
     @Embedded
     val coordinates: Coordinate,
     @Column(name = "creation_date", nullable = false)
     val creationDate: LocalDate,
     @Column(name = "student_count")
-    val studentCount: Long?,
+    var studentCount: Long?,
     @Column(name = "form_of_education")
     @Enumerated(EnumType.STRING)
-    val  formOfEducation: FormOfEducation?,
+    var  formOfEducation: FormOfEducation?,
     @Column(name = "semester_enum")
     @Enumerated(EnumType.STRING)
-    val semesterEnum: Semester?,
+    var semesterEnum: Semester?,
     @JoinColumn(name = "group_admin")
     @ManyToOne
-    val groupAdmin: Person?,
+    var groupAdmin: Person?,
 )
