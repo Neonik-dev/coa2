@@ -8,6 +8,7 @@ import lisval.service1.dto.NewStudyGroup
 import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.StudyGroupResponse
 import lisval.service1.mapper.StudyGroupMapper
+import lisval.service1.persistence.model.GroupByFormOfEducation
 import lisval.service1.persistence.model.StudyGroup
 import lisval.service1.persistence.model.enums.FormOfEducation
 import lisval.service1.persistence.model.enums.Semester
@@ -56,6 +57,10 @@ class StudyGroupService(
 
     fun getByMinCreationDate() : StudyGroup {
         return studyGroupRepository.findFirstByOrderByCreationDateAsc() ?: throw RuntimeException("в бд еще нет ни одного челика")
+    }
+
+    fun getGroupByFormOfEducation() : List<GroupByFormOfEducation> {
+        return studyGroupRepository.findGroupByFormOfEducation().filterNotNull()
     }
 
     fun getAll(

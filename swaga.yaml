@@ -309,11 +309,11 @@ paths:
         "5XX":
           $ref: "#/components/responses/ServerError"
 
-  /studygroups/group-by-id:
+  /studygroups/group-by-form-of-education:
     get:
       tags:
         - First service
-      summary: Сгруппировать объекты по id и вернуть количество в каждой группе
+      summary: Сгруппировать объекты по formOfEducation и вернуть количество в каждой группе
       responses:
         '200':
           description: OK
@@ -328,11 +328,10 @@ paths:
                   json:
                     name: GroupCount
                   properties:
-                    id:
-                      type: integer
-                      minimum: 1
+                    formOfEducation:
+                      type: string
                     count:
-                      type: integer
+                      type: long
                       minimum: 0
         "5XX":
           $ref: "#/components/responses/ServerError"

@@ -6,6 +6,7 @@ import lisval.service1.dto.NewStudyGroup
 import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.StudyGroupResponse
 import lisval.service1.mapper.StudyGroupMapper
+import lisval.service1.persistence.model.GroupByFormOfEducation
 import lisval.service1.persistence.model.enums.FormOfEducation
 import lisval.service1.persistence.model.enums.Semester
 import lisval.service1.service.StudyGroupService
@@ -75,5 +76,10 @@ class StudyGroupsController(
     fun getByMinCreationDate(): StudyGroupResponse {
         val studyGroup = studyGroupService.getByMinCreationDate()
         return studyGroupMapper.mapToStudyGroupResponse(studyGroup)
+    }
+
+    @GetMapping("/group-by-form-of-education}")
+    fun getGroupByFormOfEducation(): List<GroupByFormOfEducation> {
+        return studyGroupService.getGroupByFormOfEducation()
     }
 }
