@@ -29,14 +29,25 @@ class StudyGroupService(
 
     fun createGroup(request: NewStudyGroup) {
         val admin = request.groupAdmin?.let {
-            personRepository.findByIdOrNull(request.groupAdmin) ?: throw RuntimeException("челик не найден")
+            personRepository.findByIdOrNull(it) ?: throw RuntimeException("челик не найден")
         }
         val studyGroup = studentGroupMapper.mapToEntity(request, admin)
         studyGroupRepository.save(studyGroup)
     }
 
     fun getById(id: Long): StudyGroup {
-        return studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("челик не найден")
+        return studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
+    }
+
+    fun putById(id: Long, request: NewStudyGroup) {
+        var studyGroup = studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
+        val admin = when (request.groupAdmin) {
+            null -> null
+            studyGroup.groupAdmin?.id -> studyGroup.groupAdmin
+            else -> personRepository.findByIdOrNull(request.groupAdmin) ?: throw RuntimeException("челик не найден")
+        }
+        studyGroup = studentGroupMapper.mapToEntity(request, admin)
+        studyGroupRepository.save(studyGroup)
     }
 
     fun removeById(id: Long) {
