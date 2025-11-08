@@ -1,4 +1,4 @@
-package lisval.service2;
+package lisval.service2.resource;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

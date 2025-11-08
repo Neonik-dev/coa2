@@ -72,7 +72,7 @@ class StudyGroupsController(
         studyGroupService.removeById(id)
     }
 
-    @GetMapping("/min-creation-date}")
+    @GetMapping("/min-creation-date")
     fun getByMinCreationDate(): StudyGroupResponse {
         val studyGroup = studyGroupService.getByMinCreationDate()
         return studyGroupMapper.mapToStudyGroupResponse(studyGroup)
