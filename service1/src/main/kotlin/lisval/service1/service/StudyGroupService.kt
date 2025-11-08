@@ -43,6 +43,10 @@ class StudyGroupService(
         return studyGroupRepository.deleteById(id)
     }
 
+    fun getByMinCreationDate() : StudyGroup {
+        return studyGroupRepository.findFirstByOrderByCreationDateAsc() ?: throw RuntimeException("в бд еще нет ни одного челика")
+    }
+
     fun getAll(
         sort: String?,
         page: Int,
