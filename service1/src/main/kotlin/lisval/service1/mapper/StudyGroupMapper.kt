@@ -17,7 +17,6 @@ class StudyGroupMapper(
 
     fun mapToEntity(request: NewStudyGroup, admin: Person?): StudyGroup {
         return StudyGroup(
-            id = -1,
             name = request.name,
             coordinates = Coordinate(
                 x = request.coordinates.x,
@@ -41,7 +40,7 @@ class StudyGroupMapper(
 
     fun mapToStudyGroupResponse(group: StudyGroup): StudyGroupResponse {
         return StudyGroupResponse(
-            id = group.id,
+            id = group.id!!,
             name = group.name,
             coordinates = CoordinatesDto(
                 x = group.coordinates.x,

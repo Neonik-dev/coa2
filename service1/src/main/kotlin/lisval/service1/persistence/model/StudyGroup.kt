@@ -21,7 +21,7 @@ import java.time.LocalDate
 data class StudyGroup(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long,
+    val id: Long? = null,
     @Column(nullable = false)
     val name: String,
     @Embedded
