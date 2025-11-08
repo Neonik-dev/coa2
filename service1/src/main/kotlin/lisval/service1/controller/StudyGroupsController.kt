@@ -78,8 +78,14 @@ class StudyGroupsController(
         return studyGroupMapper.mapToStudyGroupResponse(studyGroup)
     }
 
-    @GetMapping("/group-by-form-of-education}")
+    @GetMapping("/group-by-form-of-education")
     fun getGroupByFormOfEducation(): List<GroupByFormOfEducation> {
         return studyGroupService.getGroupByFormOfEducation()
+    }
+
+    @GetMapping("/form-of-education/lt/{formOfEducation}")
+    fun getLtFormOfEducation(@PathVariable formOfEducation: FormOfEducation): List<StudyGroupResponse> {
+        val studyGroups = studyGroupService.getLtFormOfEducation(formOfEducation)
+        return studyGroups.map { studyGroupMapper.mapToStudyGroupResponse(it) }
     }
 }

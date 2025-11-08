@@ -63,6 +63,10 @@ class StudyGroupService(
         return studyGroupRepository.findGroupByFormOfEducation().filterNotNull()
     }
 
+    fun getLtFormOfEducation(formOfEducation: FormOfEducation) : List<StudyGroup> {
+        return studyGroupRepository.findByFormOfEducationLessThan(formOfEducation)
+    }
+
     fun getAll(
         sort: String?,
         page: Int,
