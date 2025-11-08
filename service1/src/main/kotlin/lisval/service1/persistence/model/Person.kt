@@ -21,7 +21,7 @@ data class Person(
     @Column(nullable = false)
     val weight: Int,
     @Column(name = "passport_id", unique = true)
-    val passportID: String?,
+    val passportId: String?,
     @Enumerated(EnumType.STRING)
     val nationality: Country?
 )

@@ -35,6 +35,14 @@ class StudyGroupService(
         studyGroupRepository.save(studyGroup)
     }
 
+    fun getById(id: Long): StudyGroup {
+        return studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("челик не найден")
+    }
+
+    fun removeById(id: Long) {
+        return studyGroupRepository.deleteById(id)
+    }
+
     fun getAll(
         sort: String?,
         page: Int,

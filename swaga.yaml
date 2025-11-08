@@ -288,8 +288,6 @@ paths:
       responses:
         '204':
           description: No Content
-        '404':
-          $ref: '#/components/responses/NotFound'
         "5XX":
           $ref: "#/components/responses/ServerError"
 
@@ -507,7 +505,7 @@ components:
           type: number
           format: int
           minimum: 1
-        passportID:
+        passportId:
           type: string
           minLength: 1
         nationality:

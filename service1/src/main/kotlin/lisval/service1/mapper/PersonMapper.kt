@@ -14,7 +14,7 @@ class PersonMapper {
             name = request.name,
             birthday = request.birthday,
             weight = request.weight,
-            passportID = request.passportId,
+            passportId = request.passportId,
             nationality = request.nationality,
         )
     }
@@ -33,7 +33,7 @@ class PersonMapper {
             name = person.name,
             birthday = person.birthday?.toString(),
             weight = person.weight,
-            passportID = person.passportID,
+            passportId = person.passportId,
             nationality = person.nationality
         )
     }

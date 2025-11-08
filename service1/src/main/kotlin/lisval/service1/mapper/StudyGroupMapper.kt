@@ -33,13 +33,13 @@ class StudyGroupMapper(
 
     fun mapToPageStudyGroupResponse(groups: List<StudyGroup>, currentPage: Int, totalPages: Int): PageWrapper<StudyGroupResponse> {
         return PageWrapper(
-            data = groups.map { mapToPersonResponse(it) },
+            data = groups.map { mapToStudyGroupResponse(it) },
             currentPage = currentPage,
             totalPages = totalPages,
         )
     }
 
-    fun mapToPersonResponse(group: StudyGroup): StudyGroupResponse {
+    fun mapToStudyGroupResponse(group: StudyGroup): StudyGroupResponse {
         return StudyGroupResponse(
             id = group.id,
             name = group.name,

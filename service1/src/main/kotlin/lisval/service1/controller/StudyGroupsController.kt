@@ -5,12 +5,15 @@ import jakarta.validation.constraints.Min
 import lisval.service1.dto.NewStudyGroup
 import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.StudyGroupResponse
+import lisval.service1.mapper.StudyGroupMapper
 import lisval.service1.persistence.model.enums.FormOfEducation
 import lisval.service1.persistence.model.enums.Semester
 import lisval.service1.service.StudyGroupService
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,7 +26,8 @@ import java.time.LocalDate
 @RequestMapping("/api/studygroups")
 @Validated
 class StudyGroupsController(
-    private val studyGroupService: StudyGroupService
+    private val studyGroupService: StudyGroupService,
+    private val studyGroupMapper: StudyGroupMapper,
 ) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,5 +52,15 @@ class StudyGroupsController(
         return studyGroupService.getAll(sort, page, size, id, x, y, creationDate, studentsCount, formOfEducation, semesterEnum, groupAdmin)
     }
 
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: Long): StudyGroupResponse {
+        val studyGroup = studyGroupService.getById(id)
+        return studyGroupMapper.mapToStudyGroupResponse(studyGroup)
+    }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun removeById(@PathVariable id: Long) {
+        studyGroupService.removeById(id)
+    }
 }

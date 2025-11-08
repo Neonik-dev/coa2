@@ -7,6 +7,6 @@ data class PersonResponse(
     val name: String,
     val birthday: String?,
     val weight: Int,
-    val passportID: String?,
+    val passportId: String?,
     val nationality: Country?,
 )
