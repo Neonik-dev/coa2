@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable
 @Embeddable
 data class Coordinate(
     @Column(name = "coordinate_x")
-    val x: Int,
+    val x: Int?,
     @Column(name = "coordinate_y", nullable = false)
     val y: Int,
 )

@@ -4,13 +4,12 @@ import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import lisval.service1.persistence.model.Person
 
 object CriteriaApiUtils {
 
-    fun <T> generatePredicate(
+    fun <T, P> generatePredicate(
         builder: CriteriaBuilder,
-        root: Root<Person>,
+        root: Root<P>,
         value: T?,
         fieldName: String
     ): Predicate? {
@@ -22,9 +21,9 @@ object CriteriaApiUtils {
         }
     }
 
-    fun generateSortPredicates(
+    fun <T> generateSortPredicates(
         builder: CriteriaBuilder,
-        root: Root<Person>,
+        root: Root<T>,
         sort: String?
     ): List<Order> {
         sort ?: return emptyList()

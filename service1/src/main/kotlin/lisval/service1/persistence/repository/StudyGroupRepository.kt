@@ -1,8 +1,8 @@
 package lisval.service1.persistence.repository
 
-import lisval.service1.persistence.model.Person
+import lisval.service1.persistence.model.StudyGroup
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface StudyGroupRepository : JpaRepository<Person, String>
+interface StudyGroupRepository : JpaRepository<StudyGroup, String>

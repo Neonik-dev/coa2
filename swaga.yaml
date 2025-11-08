@@ -108,6 +108,9 @@ paths:
                   totalPages:
                     type: integer
                     minimum: 0
+                  currentPage:
+                    type: integer
+                    minimum: 0
         '400':
           $ref: '#/components/responses/BadRequest'
         "5XX":
@@ -206,11 +209,6 @@ paths:
           description: Фильтр по имени администратора группы (точно)
           schema:
             type: string
-        - name: nationality
-          in: query
-          description: Фильтр по гражданству администратора
-          schema:
-            $ref: '#/components/schemas/Country'
       responses:
         '200':
           description: OK
@@ -226,6 +224,9 @@ paths:
                     json:
                       name: StudyGroups
                   totalPages:
+                    type: integer
+                    minimum: 0
+                  currentPage:
                     type: integer
                     minimum: 0
         '400':

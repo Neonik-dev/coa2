@@ -19,16 +19,17 @@ class PersonMapper {
         )
     }
 
-    fun mapToPagePersonResponse(persons: List<Person>, currentPage: Int, totalPage: Int): PageWrapper<PersonResponse> {
+    fun mapToPagePersonResponse(persons: List<Person>, currentPage: Int, totalPages: Int): PageWrapper<PersonResponse> {
         return PageWrapper(
             data = persons.map { mapToPersonResponse(it) },
             currentPage = currentPage,
-            totalPage = totalPage,
+            totalPages = totalPages,
         )
     }
 
     fun mapToPersonResponse(person: Person): PersonResponse {
         return PersonResponse(
+            id = person.id,
             name = person.name,
             birthday = person.birthday?.toString(),
             weight = person.weight,
