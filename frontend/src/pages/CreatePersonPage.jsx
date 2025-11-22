@@ -31,7 +31,9 @@ export const CreatePersonPage = () => {
             await personsAPI.create({
                 ...formData,
                 weight: formData.weight ? parseInt(formData.weight) : undefined,
-                birthday: formData.birthday || null
+                birthday: formData.birthday || null,
+                passportId: formData.passportId.trim() || null,
+                nationality: formData.nationality.trim() || null
             })
             navigate('/persons')
         } catch (err) {
