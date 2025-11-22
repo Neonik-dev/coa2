@@ -1,5 +1,6 @@
 package lisval.service1.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityManager
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
@@ -9,14 +10,18 @@ import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.StudyGroupResponse
 import lisval.service1.mapper.StudyGroupMapper
 import lisval.service1.persistence.model.GroupByFormOfEducation
+import lisval.service1.persistence.model.OutboxEvent
 import lisval.service1.persistence.model.StudyGroup
 import lisval.service1.persistence.model.enums.FormOfEducation
+import lisval.service1.persistence.model.enums.OutboxEventType
 import lisval.service1.persistence.model.enums.Semester
+import lisval.service1.persistence.repository.OutboxEventRepository
 import lisval.service1.persistence.repository.PersonRepository
 import lisval.service1.persistence.repository.StudyGroupRepository
 import lisval.service1.utils.CriteriaApiUtils
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import kotlin.math.ceil
 
@@ -26,20 +31,35 @@ class StudyGroupService(
     private val personRepository: PersonRepository,
     private val studentGroupMapper: StudyGroupMapper,
     private val entityManager: EntityManager,
+    private val mapper: ObjectMapper,
+    private val outboxEventRepository: OutboxEventRepository,
     ) {
-
+    @Transactional
     fun createGroup(request: NewStudyGroup) {
         val admin = request.groupAdmin?.let {
             personRepository.findByIdOrNull(it) ?: throw RuntimeException("челик не найден")
         }
         val studyGroup = studentGroupMapper.mapToEntity(request, admin)
-        studyGroupRepository.save(studyGroup)
+        val saved = studyGroupRepository.save(studyGroup)
+        val event = try {
+            OutboxEvent(
+                aggregateType = "study-group",
+                aggregateId = saved.id.toString(),
+                eventType = OutboxEventType.CREATE,
+                payload = mapper.writeValueAsString(saved),
+            )
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+
+        outboxEventRepository.save(event)
     }
 
     fun getById(id: Long): StudyGroup {
         return studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
     }
 
+    @Transactional
     fun putById(id: Long, request: NewStudyGroup) {
         val studyGroup = studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
         val admin = when (request.groupAdmin) {
@@ -48,10 +68,35 @@ class StudyGroupService(
             else -> personRepository.findByIdOrNull(request.groupAdmin) ?: throw RuntimeException("челик не найден")
         }
         studentGroupMapper.enrichToStudyGroup(studyGroup, request, admin)
-        studyGroupRepository.save(studyGroup)
+        val saved = studyGroupRepository.save(studyGroup)
+        val event = try {
+            OutboxEvent(
+                aggregateType = "study-group",
+                aggregateId = saved.id.toString(),
+                eventType = OutboxEventType.UPDATE,
+                payload = mapper.writeValueAsString(saved),
+            )
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+
+        outboxEventRepository.save(event)
     }
 
+    @Transactional
     fun removeById(id: Long) {
+        val event = try {
+            OutboxEvent(
+                aggregateType = "study-group",
+                aggregateId = id.toString(),
+                eventType = OutboxEventType.DELETE,
+                payload = null
+            )
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+
+        outboxEventRepository.save(event)
         return studyGroupRepository.deleteById(id)
     }
 

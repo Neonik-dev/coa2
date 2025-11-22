@@ -1,31 +1,52 @@
 package lisval.service1.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityManager
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import jakarta.transaction.Transactional
 import lisval.service1.dto.NewPersonRequest
 import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.PersonResponse
 import lisval.service1.mapper.PersonMapper
+import lisval.service1.persistence.model.OutboxEvent
 import lisval.service1.persistence.model.Person
 import lisval.service1.persistence.model.enums.Country
+import lisval.service1.persistence.model.enums.OutboxEventType
+import lisval.service1.persistence.repository.OutboxEventRepository
 import lisval.service1.persistence.repository.PersonRepository
 import lisval.service1.utils.CriteriaApiUtils
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import kotlin.math.ceil
 
+
 @Service
 class PersonService(
     private val personMapper: PersonMapper,
     private val personRepository: PersonRepository,
     private val entityManager: EntityManager,
+    private val outboxEventRepository: OutboxEventRepository,
+    private val mapper: ObjectMapper
 ) {
 
+    @Transactional
     fun createPerson(personRequest: NewPersonRequest) {
         val person = personMapper.mapToEntity(personRequest)
-        personRepository.save(person)
+        val saved = personRepository.save(person)
+        val event = try {
+            OutboxEvent(
+                aggregateType = "person",
+                aggregateId = saved.id,
+                eventType = OutboxEventType.CREATE,
+                payload = mapper.writeValueAsString(saved),
+            )
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+
+        outboxEventRepository.save(event)
     }
 
     fun getAll(
