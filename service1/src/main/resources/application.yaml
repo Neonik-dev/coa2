@@ -4,9 +4,9 @@ spring:
   elasticsearch:
     uris: http://localhost:9200
   datasource:
-    url: jdbc:postgresql://pg:5432/studs
-    username: s367959
-    password: ihU4fUGQ72m1gZIT
+    url: jdbc:postgresql://localhost:5432/coa2
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -22,13 +22,13 @@ server:
   error:
     whitelabel:
       enabled: false
-  port: 8052
+  port: 8081
   ssl:
-    key-store: classpath:gelios/keystore.p12
+    key-store: classpath:keytool2/keystore.p12
     key-store-password: rootroot
     key-store-type: PKCS12
     key-alias: myserver
-    enabled: false
+    enabled: true
 #  servlet:
 #    session:
 #      cookie:
