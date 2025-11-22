@@ -118,7 +118,7 @@ const PersonsPage = () => {
         {
             key: 'passportID',
             title: 'Passport ID',
-            dataIndex: 'passportID',
+            dataIndex: 'passportId',
             align: 'center'
         },
         {
