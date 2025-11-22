@@ -6,16 +6,47 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
+
 
 @Stateless
 public class HttpClientBean {
 
     private Client createClient() {
-        return ClientBuilder.newBuilder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[0];
+                        }
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+            return ClientBuilder.newBuilder()
+                    .sslContext(sslContext)
+                    .hostnameVerifier((hostname, session) -> true)
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
+
+        } catch (Exception e) {
+            return ClientBuilder.newBuilder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
+        }
     }
 
     public String get(String url) {

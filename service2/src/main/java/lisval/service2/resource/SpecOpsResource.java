@@ -22,19 +22,19 @@ public class SpecOpsResource {
     @POST
     @Path("/{group-id}/expel-all")
     public Response index(@PathParam("group-id") String groupId) throws Exception {
-        Map<String, Object> parsedResponse = mapper.readValue(httpClient.get("http://localhost:8081/api/studygroups/" + groupId), Map.class);
+        Map<String, Object> parsedResponse = mapper.readValue(httpClient.get("https://localhost:8081/api/studygroups/" + groupId), Map.class);
         parsedResponse.put("groupAdmin", null);
-        httpClient.put("http://localhost:8081/api/studygroups/" + groupId, mapper.writeValueAsString(parsedResponse));
+        httpClient.put("https://localhost:8081/api/studygroups/" + groupId, mapper.writeValueAsString(parsedResponse));
         return Response.ok().build();
     }
 
     @POST
     @Path("/{group-id}/change-edu-form/{new-form}")
     public Response index(@PathParam("group-id") String groupId, @PathParam("new-form") String newForm) throws Exception {
-        Map<String, Object> parsedResponse = mapper.readValue(httpClient.get("http://localhost:8081/api/studygroups/" + groupId), Map.class);
+        Map<String, Object> parsedResponse = mapper.readValue(httpClient.get("https://localhost:8081/api/studygroups/" + groupId), Map.class);
         parsedResponse.put("formOfEducation", newForm);
         parsedResponse.put("groupAdmin", ((Map<String, Object>) parsedResponse.get("groupAdmin")).get("id"));
-        httpClient.put("http://localhost:8081/api/studygroups/" + groupId, mapper.writeValueAsString(parsedResponse));
+        httpClient.put("https://localhost:8081/api/studygroups/" + groupId, mapper.writeValueAsString(parsedResponse));
         return Response.ok().build();
     }
 }

@@ -9,7 +9,7 @@ const apiService1 = axios.create({
     },
 })
 
-const API_SERVICE_2_BASE_URL = 'http://localhost:8080/service2-1.0-SNAPSHOT/api'
+const API_SERVICE_2_BASE_URL = 'https://localhost:8051/service2-1.0-SNAPSHOT/api'
 const apiService2 = axios.create({
     baseURL: API_SERVICE_2_BASE_URL,
     headers: {
