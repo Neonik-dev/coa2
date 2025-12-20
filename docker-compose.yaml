@@ -36,9 +36,22 @@ services:
       - es-net
     depends_on:
       - elasticsearch
+  haproxy:
+    image: haproxy:2.9
+    container_name: haproxy
+    user: root
+    ports:
+      - "80:80"
+      - "9999:9999"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - haproxy-sock:/var/run
+    restart: unless-stopped
+    command: [ "sh", "-c", "apt-get update && apt-get install -y socat && haproxy -f /usr/local/etc/haproxy/haproxy.cfg" ]
 
 volumes:
   esdata:
+  haproxy-sock:
 
 networks:
   es-net:

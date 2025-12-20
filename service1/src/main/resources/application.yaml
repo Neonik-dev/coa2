@@ -17,18 +17,18 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: create
-    show-sql: true
+    show-sql: false
 server:
   error:
     whitelabel:
       enabled: false
-  port: 8081
+  port: 8052
   ssl:
     key-store: classpath:keytool2/keystore.p12
     key-store-password: rootroot
     key-store-type: PKCS12
     key-alias: myserver
-    enabled: true
+    enabled: false
 #  servlet:
 #    session:
 #      cookie:

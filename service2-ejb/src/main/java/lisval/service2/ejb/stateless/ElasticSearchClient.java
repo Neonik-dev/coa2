@@ -1,16 +1,17 @@
-package lisval.service2.client;
+package lisval.service2.ejb.stateless;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.ejb.Singleton;
+import jakarta.ejb.Stateless;
+import lisval.service2.ejb.remote.ElasticSearchClientRemote;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 
-@Singleton
-public class ElasticSearchClient {
+@Stateless
+public class ElasticSearchClient implements ElasticSearchClientRemote {
 
     private RestClient restClient;
     private ElasticsearchClient client;
