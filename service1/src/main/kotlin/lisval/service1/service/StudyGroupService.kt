@@ -8,6 +8,9 @@ import jakarta.persistence.criteria.Root
 import lisval.service1.dto.NewStudyGroup
 import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.StudyGroupResponse
+import lisval.service1.exceptions.EntityByFilterNotFound
+import lisval.service1.exceptions.GroupNotFound
+import lisval.service1.exceptions.PersonNotFound
 import lisval.service1.mapper.StudyGroupMapper
 import lisval.service1.persistence.model.GroupByFormOfEducation
 import lisval.service1.persistence.model.OutboxEvent
@@ -37,7 +40,7 @@ class StudyGroupService(
     @Transactional
     fun createGroup(request: NewStudyGroup) {
         val admin = request.groupAdmin?.let {
-            personRepository.findByIdOrNull(it) ?: throw RuntimeException("челик не найден")
+            personRepository.findByIdOrNull(it) ?: throw PersonNotFound(it)
         }
         val studyGroup = studentGroupMapper.mapToEntity(request, admin)
         val saved = studyGroupRepository.save(studyGroup)
@@ -56,16 +59,16 @@ class StudyGroupService(
     }
 
     fun getById(id: Long): StudyGroup {
-        return studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
+        return studyGroupRepository.findByIdOrNull(id) ?: throw GroupNotFound(id)
     }
 
     @Transactional
     fun putById(id: Long, request: NewStudyGroup) {
-        val studyGroup = studyGroupRepository.findByIdOrNull(id) ?: throw RuntimeException("шруппа не найдена")
+        val studyGroup = studyGroupRepository.findByIdOrNull(id) ?: throw GroupNotFound(id)
         val admin = when (request.groupAdmin) {
             null -> null
             studyGroup.groupAdmin?.id -> studyGroup.groupAdmin
-            else -> personRepository.findByIdOrNull(request.groupAdmin) ?: throw RuntimeException("челик не найден")
+            else -> personRepository.findByIdOrNull(request.groupAdmin) ?: throw PersonNotFound(request.groupAdmin)
         }
         studentGroupMapper.enrichToStudyGroup(studyGroup, request, admin)
         val saved = studyGroupRepository.save(studyGroup)
@@ -101,7 +104,7 @@ class StudyGroupService(
     }
 
     fun getByMinCreationDate() : StudyGroup {
-        return studyGroupRepository.findFirstByOrderByCreationDateAsc() ?: throw RuntimeException("в бд еще нет ни одного челика")
+        return studyGroupRepository.findFirstByOrderByCreationDateAsc() ?: throw EntityByFilterNotFound()
     }
 
     fun getGroupByFormOfEducation() : List<GroupByFormOfEducation> {
