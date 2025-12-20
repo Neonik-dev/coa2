@@ -44,6 +44,7 @@ class StudyGroupsController(
         @RequestParam @Min(0) page: Int = 0,
         @RequestParam @Min(0) size: Int = 20,
         @RequestParam @Min(0) id: Long?,
+        @RequestParam name: String?,
         @RequestParam x: String?,
         @RequestParam y: String?,
         @RequestParam creationDate: LocalDate?,
@@ -55,7 +56,7 @@ class StudyGroupsController(
         @RequestParam groupAdmin: String?,
     ): PageWrapper<StudyGroupResponse> {
         ParamValidation.validate(studentsCount, ltStudentsCount, gtStudentsCount)
-        return studyGroupService.getAll(sort, page, size, id, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
+        return studyGroupService.getAll(sort, page, size, id, name, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
     }
 
     @GetMapping("/{id}")

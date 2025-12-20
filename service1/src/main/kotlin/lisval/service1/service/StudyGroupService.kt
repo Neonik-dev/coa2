@@ -120,6 +120,7 @@ class StudyGroupService(
         page: Int,
         size: Int,
         id: Long?,
+        name: String?,
         x: String?,
         y: String?,
         creationDate: LocalDate?,
@@ -134,14 +135,14 @@ class StudyGroupService(
 
         val countQuery = builder.createQuery(Long::class.java)
         var root = countQuery.from(StudyGroup::class.java)
-        var predicates = generatePredicates(builder, root, id, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
+        var predicates = generatePredicates(builder, root, id, name, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
         countQuery.select(builder.count(root)).where(*predicates)
         val countRaw = entityManager.createQuery(countQuery).singleResult
         val countPage = ceil(countRaw / size.toDouble()).toInt()
 
         val criteriaQuery = builder.createQuery(StudyGroup::class.java)
         root = criteriaQuery.from(StudyGroup::class.java)
-        predicates = generatePredicates(builder, root, id, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
+        predicates = generatePredicates(builder, root, id, name, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
         val sortPredicates = CriteriaApiUtils.generateSortPredicates(builder, root, sort)
         val select = criteriaQuery.select(root).where(*predicates).orderBy(sortPredicates)
         val persons = entityManager.createQuery(select).setFirstResult((page) * size).setMaxResults(size).resultList
@@ -152,6 +153,7 @@ class StudyGroupService(
         builder: CriteriaBuilder,
         root: Root<StudyGroup>,
         id: Long?,
+        name: String?,
         x: String?,
         y: String?,
         creationDate: LocalDate?,
@@ -164,6 +166,7 @@ class StudyGroupService(
     ): Array<Predicate> {
         return listOfNotNull(
             CriteriaApiUtils.generatePredicate(builder, root, id, "id"),
+            name?.let { builder.like(root.get("name"), "%$it%") },
             CriteriaApiUtils.generatePredicate(builder, root, x, "coordinate_x"),
             CriteriaApiUtils.generatePredicate(builder, root, y, "coordinate_y"),
             CriteriaApiUtils.generatePredicate(builder, root, creationDate, "creation_date"),
