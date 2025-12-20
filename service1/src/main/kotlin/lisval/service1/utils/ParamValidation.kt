@@ -9,7 +9,7 @@ object ParamValidation {
         if (eq != null && (lt != null || gt != null)) {
             throw ValidationException()
         }
-        if (gt != null && lt != null && gt <= lt) {
+        if (gt != null && lt != null && gt >= lt) {
             throw ValidationException()
         }
     }
