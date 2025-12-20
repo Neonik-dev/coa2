@@ -58,19 +58,21 @@ class PersonService(
         nationality: Country?,
         name: String?,
         weight: Int?,
+        ltWeight: Int?,
+        gtWeight: Int?
     ): PageWrapper<PersonResponse> {
         val builder = entityManager.criteriaBuilder
 
         val countQuery = builder.createQuery(Long::class.java)
         var root = countQuery.from(Person::class.java)
-        var predicates = generatePredicates(builder, root, passportId, birthday, nationality, name, weight)
+        var predicates = generatePredicates(builder, root, passportId, birthday, nationality, name, weight, ltWeight, gtWeight)
         countQuery.select(builder.count(root)).where(*predicates)
         val countRaw = entityManager.createQuery(countQuery).singleResult
         val countPage = ceil(countRaw / size.toDouble()).toInt()
 
         val criteriaQuery = builder.createQuery(Person::class.java)
         root = criteriaQuery.from(Person::class.java)
-        predicates = generatePredicates(builder, root, passportId, birthday, nationality, name, weight)
+        predicates = generatePredicates(builder, root, passportId, birthday, nationality, name, weight, ltWeight, gtWeight)
         val sortPredicates = CriteriaApiUtils.generateSortPredicates(builder, root, sort)
         val select = criteriaQuery.select(root).where(*predicates).orderBy(sortPredicates)
         val persons = entityManager.createQuery(select).setFirstResult((page) * size).setMaxResults(size).resultList
@@ -85,6 +87,8 @@ class PersonService(
         nationality: Country?,
         name: String?,
         weight: Int?,
+        ltWeight: Int?,
+        gtWeight: Int?,
     ): Array<Predicate> {
         return listOfNotNull(
             CriteriaApiUtils.generatePredicate(builder, root, passportId, "passport_id"),
@@ -92,6 +96,8 @@ class PersonService(
             CriteriaApiUtils.generatePredicate(builder, root, nationality?.name, "nationality"),
             CriteriaApiUtils.generatePredicate(builder, root, name, "name"),
             CriteriaApiUtils.generatePredicate(builder, root, weight, "weight"),
+            ltWeight?.let { builder.lt(root.get<Int>("weight"), it) },
+            gtWeight?.let { builder.gt(root.get<Int>("weight"), it) }
         ).toTypedArray()
     }
 }

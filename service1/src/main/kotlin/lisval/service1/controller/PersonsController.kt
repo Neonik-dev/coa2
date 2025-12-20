@@ -7,6 +7,7 @@ import lisval.service1.dto.PageWrapper
 import lisval.service1.dto.PersonResponse
 import lisval.service1.persistence.model.enums.Country
 import lisval.service1.service.PersonService
+import lisval.service1.utils.ParamValidation
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -41,7 +42,10 @@ class PersonsController(
         @RequestParam nationality: Country?,
         @RequestParam name: String?,
         @RequestParam @Min(0) weight: Int?,
+        @RequestParam @Min(0) ltWeight: Int?,
+        @RequestParam @Min(0) gtWeight: Int?,
     ): PageWrapper<PersonResponse> {
-        return personService.getAll(sort, page, size, passportId, birthday, nationality, name, weight)
+        ParamValidation.validate(weight, ltWeight, gtWeight)
+        return personService.getAll(sort, page, size, passportId, birthday, nationality, name, weight, ltWeight, gtWeight)
     }
 }

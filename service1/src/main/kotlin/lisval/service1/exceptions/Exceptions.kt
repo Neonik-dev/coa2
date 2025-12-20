@@ -8,3 +8,6 @@ class GroupNotFound(id: Long) :
 
 class EntityByFilterNotFound() :
     RuntimeException("Не найдено ни одной сущности по заданным фильтрам..")
+
+class ValidationException :
+    RuntimeException("Валидация для полей диапазона не пройдена..")
