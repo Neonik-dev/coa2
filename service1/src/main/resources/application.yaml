@@ -1,6 +1,7 @@
 spring:
   application:
     name: service1
+    instance_id: test1
   elasticsearch:
     uris: http://localhost:9200
   datasource:
@@ -18,6 +19,39 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: false
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        register: true
+        instance-id: ${spring.application.name}:${spring.application.instance-id:${random.value}}
+        health-check-path: /actuator/health
+        health-check-interval: 15s
+        health-check-timeout: 10s
+        prefer-ip-address: true
+      config:
+        enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    shutdown:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.consul: DEBUG
+    com.ecwid.consul: DEBUG
+
 server:
   error:
     whitelabel:

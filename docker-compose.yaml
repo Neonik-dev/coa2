@@ -43,15 +43,28 @@ services:
     ports:
       - "80:80"
       - "9999:9999"
+    depends_on:
+      - consul
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
       - haproxy-sock:/var/run
     restart: unless-stopped
     command: [ "sh", "-c", "apt-get update && apt-get install -y socat && haproxy -f /usr/local/etc/haproxy/haproxy.cfg" ]
+  consul:
+    image: consul:1.15
+    container_name: consul-server
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    command: agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0
+    volumes:
+      - consul-data:/consul/data
 
 volumes:
   esdata:
   haproxy-sock:
+  consul-data:
 
 networks:
   es-net:
