@@ -91,10 +91,10 @@ class PersonService(
         gtWeight: Int?,
     ): Array<Predicate> {
         return listOfNotNull(
-            CriteriaApiUtils.generatePredicate(builder, root, passportId, "passport_id"),
+            passportId?.let { builder.like(root.get("passport_id"), "%$it%") },
             CriteriaApiUtils.generatePredicate(builder, root, birthday, "birthday"),
             CriteriaApiUtils.generatePredicate(builder, root, nationality?.name, "nationality"),
-            CriteriaApiUtils.generatePredicate(builder, root, name, "name"),
+            name?.let { builder.like(root.get("name"), "%$it%") },
             CriteriaApiUtils.generatePredicate(builder, root, weight, "weight"),
             ltWeight?.let { builder.lt(root.get<Int>("weight"), it) },
             gtWeight?.let { builder.gt(root.get<Int>("weight"), it) }
