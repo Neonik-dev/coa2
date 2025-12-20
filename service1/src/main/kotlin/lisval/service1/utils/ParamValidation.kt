@@ -5,7 +5,7 @@ import lisval.service1.exceptions.ValidationException
 
 object ParamValidation {
 
-    fun validate(eq: Int?, lt: Int?, gt: Int?) {
+    fun <T : Comparable<T>> validate(eq: T?, lt: T?, gt: T?) {
         if (eq != null && (lt != null || gt != null)) {
             throw ValidationException()
         }

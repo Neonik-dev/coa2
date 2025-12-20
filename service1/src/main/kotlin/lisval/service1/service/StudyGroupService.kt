@@ -124,6 +124,8 @@ class StudyGroupService(
         y: String?,
         creationDate: LocalDate?,
         studentsCount: Long?,
+        ltStudentsCount: Long?,
+        gtStudentsCount: Long?,
         formOfEducation: FormOfEducation?,
         semesterEnum: Semester?,
         groupAdmin: String?,
@@ -132,14 +134,14 @@ class StudyGroupService(
 
         val countQuery = builder.createQuery(Long::class.java)
         var root = countQuery.from(StudyGroup::class.java)
-        var predicates = generatePredicates(builder, root, id, x, y, creationDate, studentsCount, formOfEducation, semesterEnum, groupAdmin)
+        var predicates = generatePredicates(builder, root, id, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
         countQuery.select(builder.count(root)).where(*predicates)
         val countRaw = entityManager.createQuery(countQuery).singleResult
         val countPage = ceil(countRaw / size.toDouble()).toInt()
 
         val criteriaQuery = builder.createQuery(StudyGroup::class.java)
         root = criteriaQuery.from(StudyGroup::class.java)
-        predicates = generatePredicates(builder, root, id, x, y, creationDate, studentsCount, formOfEducation, semesterEnum, groupAdmin)
+        predicates = generatePredicates(builder, root, id, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
         val sortPredicates = CriteriaApiUtils.generateSortPredicates(builder, root, sort)
         val select = criteriaQuery.select(root).where(*predicates).orderBy(sortPredicates)
         val persons = entityManager.createQuery(select).setFirstResult((page) * size).setMaxResults(size).resultList
@@ -154,6 +156,8 @@ class StudyGroupService(
         y: String?,
         creationDate: LocalDate?,
         studentsCount: Long?,
+        ltStudentsCount: Long?,
+        gtStudentsCount: Long?,
         formOfEducation: FormOfEducation?,
         semesterEnum: Semester?,
         groupAdmin: String?,
@@ -164,6 +168,8 @@ class StudyGroupService(
             CriteriaApiUtils.generatePredicate(builder, root, y, "coordinate_y"),
             CriteriaApiUtils.generatePredicate(builder, root, creationDate, "creation_date"),
             CriteriaApiUtils.generatePredicate(builder, root, studentsCount, "students_count"),
+            ltStudentsCount?.let { builder.lt(root.get<Int>("students_count"), it) },
+            gtStudentsCount?.let { builder.gt(root.get<Int>("students_count"), it) },
             CriteriaApiUtils.generatePredicate(builder, root, formOfEducation, "form_of_education"),
             CriteriaApiUtils.generatePredicate(builder, root, semesterEnum?.name, "semester_enum"),
             groupAdmin?.let { builder.equal(root.get<String>("person").get<String>("id"), it) },

@@ -10,6 +10,7 @@ import lisval.service1.persistence.model.GroupByFormOfEducation
 import lisval.service1.persistence.model.enums.FormOfEducation
 import lisval.service1.persistence.model.enums.Semester
 import lisval.service1.service.StudyGroupService
+import lisval.service1.utils.ParamValidation
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -47,11 +48,14 @@ class StudyGroupsController(
         @RequestParam y: String?,
         @RequestParam creationDate: LocalDate?,
         @RequestParam studentsCount: Long?,
+        @RequestParam ltStudentsCount: Long?,
+        @RequestParam gtStudentsCount: Long?,
         @RequestParam formOfEducation: FormOfEducation?,
         @RequestParam semesterEnum: Semester?,
         @RequestParam groupAdmin: String?,
     ): PageWrapper<StudyGroupResponse> {
-        return studyGroupService.getAll(sort, page, size, id, x, y, creationDate, studentsCount, formOfEducation, semesterEnum, groupAdmin)
+        ParamValidation.validate(studentsCount, ltStudentsCount, gtStudentsCount)
+        return studyGroupService.getAll(sort, page, size, id, x, y, creationDate, studentsCount, ltStudentsCount, gtStudentsCount, formOfEducation, semesterEnum, groupAdmin)
     }
 
     @GetMapping("/{id}")
