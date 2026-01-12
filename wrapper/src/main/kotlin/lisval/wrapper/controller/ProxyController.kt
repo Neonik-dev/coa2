@@ -1,61 +1,44 @@
 package lisval.wrapper.controller
 
-import org.slf4j.LoggerFactory
-import org.springframework.http.HttpHeaders
-import org.springframework.http.ResponseEntity
-import org.springframework.http.server.ServerHttpRequest
-import org.springframework.web.bind.annotation.RequestBody
+import com.fasterxml.jackson.databind.ObjectMapper
+import lisval.wrapper.utils.JsonToXmlConverter
+import lisval.wrapper.utils.copyHeaders
+import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriComponentsBuilder
+import reactor.core.publisher.Mono
+import java.net.URI
 
 @RestController
-@RequestMapping("/**")
+@RequestMapping()
 class ProxyController(
-    private val webClient: WebClient,
+    private val webClient: WebClient
 ) {
-    @RequestMapping(method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE])
-    fun proxy(request: ServerHttpRequest, @RequestBody(required = false) body: String?): ResponseEntity<String> {
-//        val soapBody = buildSoapBody(body)
-//        val targetUrl = buildTargetUrl(request)
 
-//        val response = webClient
-//            .post()
-//            .uri(targetUrl)
-//            .headers { headers ->
-//                copyHeaders(request, headers)
-//                headers["Content-Type"] = "text/xml;charset=UTF-8"
-//            }
-//            .bodyValue(soapBody)
-//            .retrieve()
-//            .toEntity(String::class.java)
-//            .block()
+    @RequestMapping("/**")
+    fun proxyRequest(request: ServerHttpRequest): Mono<String> {
+        val originalPath = request.path.toString()
 
-//        return ResponseEntity
-//            .status(response!!.statusCode)
-//            .headers(response.headers)
-//            .body(response.body)
-        return ResponseEntity.ok("soapBody")
-    }
+        val targetUrl = UriComponentsBuilder
+            .fromUri(URI.create("https://localhost:8051"))
+            .path(originalPath)
+            .queryParams(request.queryParams)
+            .build()
+            .toUri()
+        val headers = copyHeaders(request.headers)
+        val method = request.method
+        val xmlBody: String = JsonToXmlConverter.convert(ObjectMapper().writeValueAsString(request.body))
 
-    companion object {
-        val logger = LoggerFactory.getLogger(this::class.java)
+
+        return webClient
+            .method(method)
+            .uri(targetUrl)
+            .headers { it.addAll(headers) }
+            .body(BodyInserters.fromPublisher(Mono.just(xmlBody), String::class.java))
+            .retrieve()
+            .bodyToMono(String::class.java)
     }
 }
-
-//fun copyHeaders(
-//    request: ServerHttpRequest,
-//    target: HttpHeaders
-//) {
-//    request.headers.forEach { (name, values) ->
-//        if (!name.equals(HttpHeaders.CONTENT_LENGTH, ignoreCase = true)) {
-//            target.put(name, values)
-//        }
-//    } as (String, MutableList<String>) -> Unit
-//}
-//
-//fun buildTargetUrl(request: HttpServletRequest): String {
-//    val query = request.queryString?.let { "?$it" } ?: ""
-//    return "https://soap-host.example.com${request.requestURI}$query"
-//}
