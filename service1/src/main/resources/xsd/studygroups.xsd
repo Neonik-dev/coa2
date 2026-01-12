@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://localhost/api/studygroups"
+           targetNamespace="http://localhost/api/studygroups"
+           elementFormDefault="qualified">
+
+    <!-- Перечисления -->
+    <xs:simpleType name="formOfEducation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DISTANCE_EDUCATION"/>
+            <xs:enumeration value="FULL_TIME_EDUCATION"/>
+            <xs:enumeration value="EVENING_CLASSES"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="semester">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="FIRST"/>
+            <xs:enumeration value="SECOND"/>
+            <xs:enumeration value="THIRD"/>
+            <xs:enumeration value="FOURTH"/>
+            <xs:enumeration value="FIFTH"/>
+            <xs:enumeration value="SIXTH"/>
+            <xs:enumeration value="SEVENTH"/>
+            <xs:enumeration value="EIGHTH"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Сложные типы -->
+    <xs:complexType name="coordinates">
+        <xs:sequence>
+            <xs:element name="x" type="xs:double"/>
+            <xs:element name="y" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="birthday" type="xs:date"/>
+            <xs:element name="weight" type="xs:int"/>
+            <xs:element name="passportId" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="studyGroupResponse">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="coordinates" type="tns:coordinates"/>
+            <xs:element name="creationDate" type="xs:dateTime"/>
+            <xs:element name="studentsCount" type="xs:long"/>
+            <xs:element name="formOfEducation" type="tns:formOfEducation"/>
+            <xs:element name="semesterEnum" type="tns:semester"/>
+            <xs:element name="groupAdmin" type="tns:person" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="groupByFormOfEducation">
+        <xs:sequence>
+            <xs:element name="formOfEducation" type="tns:formOfEducation"/>
+            <xs:element name="count" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="pageWrapper">
+        <xs:sequence>
+            <xs:element name="content" type="tns:studyGroupResponse" maxOccurs="unbounded"/>
+            <xs:element name="totalPages" type="xs:int"/>
+            <xs:element name="totalElements" type="xs:long"/>
+            <xs:element name="size" type="xs:int"/>
+            <xs:element name="number" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Запросы -->
+    <xs:element name="createGroupRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="x" type="xs:double"/>
+                <xs:element name="y" type="xs:long"/>
+                <xs:element name="studentsCount" type="xs:long"/>
+                <xs:element name="formOfEducation" type="tns:formOfEducation"/>
+                <xs:element name="semesterEnum" type="tns:semester"/>
+                <xs:element name="groupAdmin" type="tns:person" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="allGroupsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="sort" type="xs:string" minOccurs="0"/>
+                <xs:element name="page" type="xs:int" minOccurs="0"/>
+                <xs:element name="size" type="xs:int" minOccurs="0"/>
+                <xs:element name="id" type="xs:long" minOccurs="0"/>
+                <xs:element name="name" type="xs:string" minOccurs="0"/>
+                <xs:element name="creationDate" type="xs:date" minOccurs="0"/>
+                <xs:element name="studentsCount" type="xs:long" minOccurs="0"/>
+                <xs:element name="ltStudentsCount" type="xs:long" minOccurs="0"/>
+                <xs:element name="gtStudentsCount" type="xs:long" minOccurs="0"/>
+                <xs:element name="formOfEducation" type="tns:formOfEducation" minOccurs="0"/>
+                <xs:element name="semesterEnum" type="tns:semester" minOccurs="0"/>
+                <xs:element name="groupAdminName" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateGroupRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+                <xs:element name="groupData" type="tns:createGroupRequest"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deleteGroupRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getLtFormOfEducationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="formOfEducation" type="tns:formOfEducation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Ответы -->
+    <xs:element name="createGroupResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="message" type="xs:string"/>
+                <xs:element name="groupId" type="xs:long" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="allGroupsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="pageData" type="tns:pageWrapper"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getByIdResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="studyGroup" type="tns:studyGroupResponse"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateGroupResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deleteGroupResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="minCreationDateResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="studyGroup" type="tns:studyGroupResponse"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="groupByFormOfEducationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="groups" type="tns:groupByFormOfEducation" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getLtFormOfEducationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="studyGroups" type="tns:studyGroupResponse" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

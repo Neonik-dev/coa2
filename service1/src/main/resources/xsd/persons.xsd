@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://localhost/api/persons"
+           targetNamespace="http://localhost/api/persons"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="country">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RUSSIA"/>
+            <xs:enumeration value="USA"/>
+            <xs:enumeration value="GERMANY"/>
+            <xs:enumeration value="FRANCE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="createPersonRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="birthday" type="xs:date" minOccurs="0"/>
+                <xs:element name="weight" type="xs:int"/>
+                <xs:element name="passportId" type="xs:string" minOccurs="0"/>
+                <xs:element name="nationality" type="tns:country" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="createPersonResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="message" type="xs:string"/>
+                <xs:element name="personId" type="xs:long" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
