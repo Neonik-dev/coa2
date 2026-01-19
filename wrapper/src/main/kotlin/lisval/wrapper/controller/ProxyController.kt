@@ -26,7 +26,7 @@ class ProxyController(
     private val soapProxyService: UniversalSoapProxyService
 ) {
 
-    @PostMapping("/call")
+    @PostMapping("/**")
     fun proxyToSoap(
         @RequestHeader("X-SOAP-Endpoint") soapEndpoint: String,
         @RequestHeader("X-SOAP-Action") soapAction: String,
@@ -45,7 +45,7 @@ class ProxyController(
         )
     }
 
-    @RequestMapping("/**")
+    @RequestMapping("/test")
     fun proxyRequest(request: ServerHttpRequest, @RequestBody body: String): Mono<String> {
         val originalPath = request.path.toString()
 

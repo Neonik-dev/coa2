@@ -5,9 +5,9 @@ spring:
   elasticsearch:
     uris: http://localhost:9200
   datasource:
-    url: jdbc:postgresql://localhost:5432/coa2
-    username: postgres
-    password: postgres
+    url:  jdbc:postgresql://pg:5432/studs
+    username: s367352
+    password: d4w8NjO0LdyiaISe
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -19,20 +19,6 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: false
-  cloud:
-    consul:
-      host: localhost
-      port: 8500
-      discovery:
-        enabled: true
-        register: true
-        instance-id: ${spring.application.name}:${spring.application.instance-id:${random.value}}
-        health-check-path: /actuator/health
-        health-check-interval: 15s
-        health-check-timeout: 10s
-        prefer-ip-address: true
-      config:
-        enabled: false
 
 management:
   endpoints:

@@ -27,7 +27,7 @@ class StudyGroupsSoapEndpoint(
 ) {
 
     companion object {
-        private const val NAMESPACE_URI = "http://yourcompany.com/api/studygroups"
+        private const val NAMESPACE_URI = "https://localhost/api/studygroups"
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "createGroupRequest")

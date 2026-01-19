@@ -125,7 +125,7 @@ class UniversalSoapProxyService(
 
         return buildString {
             headers.forEach { (key, value) ->
-                appendLine("<$key xmlns=\"http://tempuri.org/\">$value</$key>")
+                appendLine("<$key xmlns=\"http://localhost:8052/\">$value</$key>")
             }
         }
     }

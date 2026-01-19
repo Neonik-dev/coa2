@@ -17,12 +17,12 @@ class PersonsEndpoint(
 ) {
 
     companion object {
-        private const val NAMESPACE_URI = "http://localhost/api/persons"
+        private const val NAMESPACE_URI = "https://localhost/api/persons"
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "createPersonRequest")
     @ResponsePayload
-    @SoapAction("http://localhost/api/persons/createPerson")
+    @SoapAction("https://localhost/api/persons/createPerson")
     fun createPerson(@RequestPayload request: CreatePersonRequest): CreatePersonResponse {
 
         val newPersonRequest = NewPersonRequest(
